@@ -1,0 +1,38 @@
+{
+  "name": "cc-plugins",
+  "owner": {
+    "name": "Ivan Kovinskyi"
+  },
+  "plugins": [
+    {
+      "name": "pm",
+      "source": "./plugins/pm",
+      "description": "PM plugin — task refinement, estimation, acceptance criteria. Jira/Confluence integration.",
+      "version": "0.1.0"
+    },
+    {
+      "name": "dev",
+      "source": "./plugins/dev",
+      "description": "Developer plugin — research, design, plan, implement, PR. Full dev cycle.",
+      "version": "0.1.0"
+    },
+    {
+      "name": "qa",
+      "source": "./plugins/qa",
+      "description": "QA plugin — test planning, test cases, regression analysis.",
+      "version": "0.1.0"
+    },
+    {
+      "name": "ops",
+      "source": "./plugins/ops",
+      "description": "Ops plugin — Sentry triage, incident response, release health.",
+      "version": "0.1.0"
+    },
+    {
+      "name": "stack-php-symfony",
+      "source": "./plugins/stack-php-symfony",
+      "description": "PHP 8.3 / Symfony 6.4 coding standards, database, messaging, security, testing rules.",
+      "version": "0.1.0"
+    }
+  ]
+}

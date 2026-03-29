@@ -1,0 +1,6 @@
+{
+  "name": "stack-php-symfony",
+  "version": "0.1.0",
+  "description": "PHP 8.3 / Symfony 6.4 technology stack — coding style, database patterns, messaging rules, security standards, testing requirements.",
+  "keywords": ["php", "symfony", "doctrine", "rabbitmq", "kafka"]
+}

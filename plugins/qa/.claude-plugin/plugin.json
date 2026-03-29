@@ -1,0 +1,6 @@
+{
+  "name": "qa",
+  "version": "0.1.0",
+  "description": "QA plugin — test planning, test case generation, regression analysis, exploratory testing guides. Integrates with Jira, Confluence, Sentry, Git via MCP.",
+  "keywords": ["qa", "testing", "test-plan", "regression", "quality-assurance"]
+}

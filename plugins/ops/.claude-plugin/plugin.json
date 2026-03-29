@@ -1,0 +1,6 @@
+{
+  "name": "ops",
+  "version": "0.1.0",
+  "description": "Ops plugin — Sentry triage, incident response, release health monitoring, post-mortem facilitation.",
+  "keywords": ["ops", "sre", "sentry", "incidents", "monitoring"]
+}

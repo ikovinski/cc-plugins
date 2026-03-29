@@ -1,0 +1,35 @@
+{
+  "jira": {
+    "command": "npx",
+    "args": ["-y", "@anthropic/mcp-jira"],
+    "env": {
+      "JIRA_URL": "${JIRA_URL}",
+      "JIRA_TOKEN": "${JIRA_TOKEN}",
+      "JIRA_USER_EMAIL": "${JIRA_USER_EMAIL}"
+    }
+  },
+  "confluence": {
+    "command": "npx",
+    "args": ["-y", "@anthropic/mcp-confluence"],
+    "env": {
+      "CONFLUENCE_URL": "${CONFLUENCE_URL}",
+      "CONFLUENCE_TOKEN": "${CONFLUENCE_TOKEN}",
+      "CONFLUENCE_USER_EMAIL": "${CONFLUENCE_USER_EMAIL}"
+    }
+  },
+  "sentry": {
+    "command": "npx",
+    "args": ["-y", "@anthropic/mcp-sentry"],
+    "env": {
+      "SENTRY_TOKEN": "${SENTRY_TOKEN}",
+      "SENTRY_ORG": "${SENTRY_ORG}"
+    }
+  },
+  "git": {
+    "command": "npx",
+    "args": ["-y", "@anthropic/mcp-git"],
+    "env": {
+      "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+    }
+  }
+}

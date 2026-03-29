@@ -1,0 +1,6 @@
+{
+  "name": "dev",
+  "version": "0.1.0",
+  "description": "Developer plugin — research, architecture design, implementation planning, coding with TDD, code review, PR creation. Full development cycle.",
+  "keywords": ["dev", "development", "architecture", "implementation", "code-review"]
+}
