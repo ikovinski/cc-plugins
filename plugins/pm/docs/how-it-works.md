@@ -652,38 +652,314 @@ Verdict: NEEDS REVIEW (6/7 PASS, 1 UNCLEAR)
 
 ---
 
+## /pm:codebase — Карта проєкту для PM
+
+PM потребує розуміння кодової бази для якісного refinement — але не може (або не хоче) клонувати репозиторій і читати код. `/pm:codebase` вирішує це: будує PM-friendly карту проєкту через будь-який доступний канал.
+
+### Як визначається джерело
+
+```
+/pm:codebase запущений
+        │
+        ├─ В директорії проєкту?
+        │   ├─ ДА  → Local scan (Glob/Grep)
+        │   │        + GitHub MCP → Combined mode
+        │   └─ НІ  → Тільки GitHub MCP
+        │
+        ├─ GitHub MCP підключений?
+        │   ├─ ДА  → Remote scan (GitHub API)
+        │   └─ НІ  → ❌ Cannot explore
+        │
+        └─ Repo вказаний?
+            ├─ ДА  → Scan that repo
+            └─ НІ  → Auto-detect from git remote
+                     або запитати PM
+```
+
+### Приклад 1: Local + Remote (Combined)
+
+PM працює в директорії проєкту з підключеним GitHub:
+
+```bash
+/pm:codebase
+```
+
+```
+📦 Codebase Explorer
+
+Sources:
+  Local     ✅ /Users/ivan/repo/bodyfit-api
+  GitHub    ✅ Connected → acme/bodyfit-api (auto-detected)
+  Sentry    ✅ Connected → error hotspots included
+  Mode:     Combined
+
+Scanning...
+  Phase 1/6: Project identity      ✅
+  Phase 2/6: Component map         ✅
+  Phase 3/6: API surface           ✅
+  Phase 4/6: Data model            ✅
+  Phase 5/6: Integration map       ✅
+  Phase 6/6: Activity & health     ✅
+```
+
+```
+📦 bodyfit-api
+
+Fitness tracking API for BodyFit mobile app.
+
+Stack: PHP 8.3 / Symfony 6.4 / MySQL 8 / RabbitMQ
+Size: 342 files, 8 components, 23 API endpoints, 18 DB tables
+
+━━━ Components ━━━
+
+┌──────────────┬──────────────────────────────────┬───────┬──────────┬────────┐
+│ Component    │ Purpose                          │ Files │ Activity │ Health │
+├──────────────┼──────────────────────────────────┼───────┼──────────┼────────┤
+│ Workout      │ Exercise logging & tracking      │ 42    │ 🟢 stable │ ✅     │
+│ Nutrition    │ Meal & calorie tracking          │ 28    │ 🟢 stable │ ✅     │
+│ Health       │ External device sync (Garmin)    │ 35    │ 🔥 active │ ⚠️     │
+│ Billing      │ Subscriptions & payments         │ 31    │ 🟢 stable │ ✅     │
+│ User         │ Auth, profiles, preferences      │ 24    │ 💤 dormant│ ✅     │
+│ Notification │ Push, email, in-app messages     │ 18    │ 🟢 stable │ ✅     │
+│ Report       │ Weekly/monthly statistics        │ 15    │ 💤 dormant│ ⚠️     │
+│ Admin        │ Backoffice management            │ 12    │ 💤 dormant│ ✅     │
+└──────────────┴──────────────────────────────────┴───────┴──────────┴────────┘
+
+━━━ Health Component (🔥 active) ━━━
+
+What it does: Syncs fitness data from external devices (currently Garmin).
+Handles OAuth connections, periodic data polling, and data normalization.
+
+API endpoints:
+  POST /api/health/connect/{provider}  — Connect a device (OAuth flow)
+  DELETE /api/health/disconnect/{provider} — Disconnect a device
+  POST /api/health/sync/{provider}     — Trigger manual sync
+  GET  /api/health/sync/status         — Sync status & history
+
+Data: HealthRecord, SyncStatus, DeviceConnection (3 tables)
+
+Integrations: Garmin API (active), Apple HealthKit (not yet)
+
+Recent activity (2 weeks):
+  8 commits by @dmitry (PR #456: refactor HealthDataProcessor)
+  1 commit by @serhiy (logging improvements)
+  Open PR: #456 "Refactor HealthDataProcessor for multi-provider support"
+
+Health signals:
+  Tests: 67% coverage (⚠️ below team average 82%)
+  Sentry: 3 issues, 12 events/day (⚠️ BODYFIT-A3F: permission denied)
+
+━━━ API Overview ━━━
+
+│ Module       │ Endpoints │ Auth     │ Methods          │
+│ Workout      │ 6         │ auth     │ GET, POST, PUT   │
+│ Nutrition    │ 5         │ auth     │ GET, POST, PUT   │
+│ Health       │ 4         │ auth     │ GET, POST, DELETE│
+│ Billing      │ 4         │ auth     │ GET, POST        │
+│ User         │ 3         │ auth     │ GET, PUT         │
+│ Admin        │ 6         │ admin    │ GET, POST, PUT   │
+
+━━━ Risk Signals ━━━
+
+  🟡 Low test coverage    Health (67%) — active development without safety net
+  🟡 Knowledge silo       Health — only @dmitry contributes actively
+  🔴 Error hotspot        Health — BODYFIT-A3F, 89 users affected
+  🟡 No tests             Report — 0 test files found
+
+📄 Saved: codebase-context.md
+```
+
+### Приклад 2: Remote Only (PM без проєкту)
+
+PM не має клонованого репозиторію, працює з дому:
+
+```bash
+/pm:codebase acme/bodyfit-api
+```
+
+```
+📦 Codebase Explorer
+
+Sources:
+  Local     ❌ Not in a project directory
+  GitHub    ✅ Connected → acme/bodyfit-api
+  Sentry    ✅ Connected
+  Mode:     Remote (GitHub API)
+
+⚠️ Remote mode: scan through GitHub API.
+   Deep code analysis limited — for full scan, clone the repo
+   or run from the project directory.
+
+Scanning via GitHub API...
+  Phase 1/6: Project identity      ✅ (repo metadata + package files)
+  Phase 2/6: Component map         ✅ (file tree + directory analysis)
+  Phase 3/6: API surface           ✅ (code search for routes)
+  Phase 4/6: Data model            ✅ (entity file listing + key files)
+  Phase 5/6: Integration map       ⚠️ (partial — grep limited via API)
+  Phase 6/6: Activity & health     ✅ (commits + PRs + Sentry)
+```
+
+*Output — та сама карта, але з позначками де дані неповні:*
+
+```
+━━━ Integration Map ━━━
+
+│ Service  │ Purpose              │ Component │ Confidence │
+│ Garmin   │ Fitness data sync    │ Health    │ ✅ confirmed│
+│ Stripe   │ Payment processing   │ Billing   │ ✅ confirmed│
+│ Redis    │ Caching              │ Global    │ ✅ confirmed│
+│ RabbitMQ │ Async processing     │ Global    │ ✅ confirmed│
+│ ???      │ Email service?       │ Notification│ ⚠️ unclear │
+
+⚠️ Integration map may be incomplete in remote mode.
+   For full picture — run from project directory.
+```
+
+### Приклад 3: Focused Mode
+
+```bash
+/pm:codebase --area health
+```
+
+```
+📦 Focused: Health Component
+
+━━━ Детальний огляд ━━━
+
+Files (35 total):
+  Controllers (2): HealthConnectionController, HealthSyncController
+  Services (4): GarminSyncService, HealthDataProcessor, SyncScheduler, TokenRefreshService
+  Entities (3): HealthRecord, SyncStatus, DeviceConnection
+  Handlers (2): SyncHealthDataHandler, RefreshTokenHandler
+  Tests (8): 67% coverage
+  Config (2): health_sync.yaml, garmin_api.yaml
+
+API Endpoints (detailed):
+  POST /api/health/connect/{provider}
+    Auth: ROLE_USER
+    Input: { provider: string, redirectUrl: string }
+    Output: { authUrl: string }
+    What it does: Initiates OAuth flow with fitness device provider
+
+  POST /api/health/sync/{provider}
+    Auth: ROLE_USER
+    Input: { fromDate?: string }
+    Output: { syncId: string, status: "queued" }
+    What it does: Queues a sync job. Actual sync happens async via SyncHealthDataHandler
+
+  ...
+
+Data Model:
+  HealthRecord
+    → belongs to User (many-to-one)
+    → fields: type, value, unit, recordedAt, source, externalId
+    → index: (user_id, type, recorded_at)
+
+  DeviceConnection
+    → belongs to User (many-to-one)
+    → fields: provider, accessToken, refreshToken, expiresAt, isPrimary
+    → unique: (user_id, provider)
+
+  SyncStatus
+    → belongs to User & DeviceConnection
+    → fields: status, startedAt, completedAt, recordsProcessed, error
+
+Message Handlers:
+  SyncHealthDataHandler
+    → Receives: SyncHealthDataMessage
+    → Does: Calls provider API, normalizes data, saves to HealthRecord
+    → Retry: 3 attempts with exponential backoff
+
+  RefreshTokenHandler
+    → Receives: RefreshTokenMessage
+    → Does: Refreshes expired OAuth tokens
+    → On failure: Marks connection as "needs_reauth"
+
+Recent Git Activity:
+  PR #456 (open): "Refactor HealthDataProcessor for multi-provider support"
+    Author: @dmitry | +342 / -128 lines | Created: 5 days ago
+    Status: 2 approvals, waiting for CI
+
+  Last 10 commits (2 weeks):
+    @dmitry: 8 commits (HealthDataProcessor refactor)
+    @serhiy: 1 commit (logging)
+    @anna: 1 commit (config update)
+
+Sentry Issues:
+  🔴 BODYFIT-A3F: "HealthKit permission denied" — 89 users, 12 events/day
+  🟡 BODYFIT-B2C: "Sync timeout after 30s" — 12 users, 3 events/day
+  🟡 BODYFIT-C1D: "Garmin API rate limited" — 5 users, 1 event/day
+
+Related Jira Issues:
+  PROJ-111: "Garmin sync" ✅ done (reference implementation)
+  PROJ-112: "Fitbit sync" 🔄 in progress
+  PROJ-123: "Apple Health sync" 📋 to refine (current task)
+```
+
+### Як /pm:refine використовує codebase context
+
+Task-refiner автоматично шукає `codebase-context.md`:
+
+1. Якщо існує і свіжий (<7 днів) — використовує як є
+2. Якщо не існує — запускає quick scan (local або remote)
+3. Після визначення affected area — запускає focused scan для деталей
+
+```
+Phase [1/5] Deep Context Gathering
+
+  Codebase context: ✅ Found codebase-context.md (2 days old)
+  → Health component identified as affected area
+  → Running focused scan on Health...
+  → Found: 35 files, 4 endpoints, 3 entities, 2 handlers
+  → GarminSync as analogue pattern
+  → Test coverage: 67% (below average)
+  → Sentry: 3 active issues in this module
+```
+
+---
+
 ## Режими роботи
 
-### Повний MCP (максимальна ефективність)
+### Повний набір (local + MCP + codebase)
 
-Всі 4 MCP підключені. Plugin:
-- Автоматично збирає контекст з 5+ джерел
-- Генерує гіпотези на основі cross-reference даних
-- Задає мінімум питань (тільки gaps та contradictions)
-- Порівнює з історичними даними для estimation
-- Confidence: High
+Всі 4 MCP підключені, в директорії проєкту. Максимальна якість:
+- Jira/Confluence для бізнес-контексту
+- Local codebase scan для технічних деталей
+- GitHub MCP для activity та PRs
+- Sentry для production reality
+- Мінімум питань PM — майже все знаходиться автоматично
+- Confidence: **High**
 
-### Частковий MCP
+### MCP без проєкту (PM remote)
 
-Частина серверів підключена. Plugin:
-- Використовує доступні джерела
-- Явно показує що недоступно та як це впливає
-- Задає більше питань для компенсації
-- Confidence: Medium
+GitHub MCP підключений, але PM не в директорії проєкту:
+- Jira/Confluence — повний бізнес-контекст
+- GitHub API — codebase через remote scan
+- Sentry — production issues
+- Деякі деталі коду можуть бути неповними (remote scan limitations)
+- Confidence: **Medium-High**
 
-### Pure Dialogue (без MCP, з проєктом)
+### Тільки проєкт (без MCP)
 
-Тільки codebase доступний. Plugin:
-- Сканує код для технічного контексту
+PM в директорії проєкту, MCP не налаштовані:
+- Deep local scan для технічного контексту
 - Всі бізнес-дані від PM через діалог
-- Генерує гіпотези з коду (existing patterns, missing tests, etc.)
-- Confidence: Medium-Low
+- Гіпотези з коду (existing patterns, missing tests)
+- Confidence: **Medium**
+
+### Тільки GitHub MCP
+
+Не в проєкті, тільки GitHub підключений:
+- Remote scan через GitHub API
+- Activity, PRs, contributors
+- Обмежений code search
+- Бізнес-контекст від PM через діалог
+- Confidence: **Medium-Low**
 
 ### Без проєкту, без MCP
 
-Нічого крім діалогу. Plugin:
-- Працює як досвідчений PM assistant
-- Використовує frameworks зі skills (INVEST, story formats, estimation)
+Нічого крім діалогу:
+- PM frameworks зі skills (INVEST, story formats)
 - Максимум питань PM
-- Confidence: Low
-- Рекомендує підключити MCP для кращої якості
+- Confidence: **Low**
+- Рекомендує: `/pm:setup` + `/pm:codebase owner/repo`

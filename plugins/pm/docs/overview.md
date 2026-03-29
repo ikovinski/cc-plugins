@@ -11,10 +11,12 @@ PM плагін для Claude Code. Допомагає Product Manager уточ�
 | Agent | [task-refiner](../agents/task-refiner.md) | Уточнення задач через діалог з PM (Opus) |
 | Agent | [estimator](../agents/estimator.md) | Оцінка складності на основі даних (Sonnet) |
 | Agent | [challenger](../agents/challenger.md) | Stress-test задачі через 6 перспектив (Opus) |
+| Agent | [codebase-explorer](../agents/codebase-explorer.md) | PM-friendly карта проєкту — local або GitHub (Sonnet) |
 | Command | [/pm:refine](../commands/refine.md) | Уточнення задачі (включає auto-challenge) |
 | Command | [/pm:challenge](../commands/challenge.md) | Глибока перевірка задачі на життєздатність |
 | Command | [/pm:estimate](../commands/estimate.md) | Оцінка складності |
 | Command | [/pm:accept](../commands/accept.md) | Верифікація acceptance criteria |
+| Command | [/pm:codebase](../commands/codebase.md) | PM-friendly карта проєкту (local/remote) |
 | Command | [/pm:setup](../commands/setup.md) | Налаштування MCP інтеграцій |
 | Skill | [story-formats](../skills/story-formats/SKILL.md) | User Story, Job Story, WWA, INVEST, AC patterns |
 | Skill | [estimation](../skills/estimation/SKILL.md) | T-shirt sizing, hour ranges, confidence levels |
