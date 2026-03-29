@@ -5,6 +5,23 @@ All notable changes to the PM plugin will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-03-29
+
+### Changed
+- **MCP connectors: verified working packages**
+  - `jira`: stdio, npx `@aashari/mcp-server-atlassian-jira` — env: `ATLASSIAN_JIRA_SITE_NAME`, `ATLASSIAN_USER_EMAIL`, `ATLASSIAN_API_TOKEN`
+  - `confluence`: stdio, npx `@aashari/mcp-server-atlassian-confluence` — env: `ATLASSIAN_CONFLUENCE_SITE_NAME`, `ATLASSIAN_USER_EMAIL`, `ATLASSIAN_API_TOKEN`
+  - `sentry`: stdio, npx `@sentry/mcp-server` — env: `SENTRY_ACCESS_TOKEN`, `SENTRY_ORG`
+  - `github`: stdio, npx `@modelcontextprotocol/server-github` — env: `GITHUB_PERSONAL_ACCESS_TOKEN`
+- **Jira and Confluence as separate servers** — different site names supported (e.g. `amomobile` for Jira, `um-guide` for Confluence)
+- **SessionStart hook** — checks `ATLASSIAN_JIRA_SITE_NAME`, `ATLASSIAN_CONFLUENCE_SITE_NAME`, `ATLASSIAN_USER_EMAIL`, `ATLASSIAN_API_TOKEN`, `SENTRY_ACCESS_TOKEN`, `SENTRY_ORG`, `GITHUB_PERSONAL_ACCESS_TOKEN`
+- **`/pm:setup`** — generates env var block with correct variable names
+- All plugin `.mcp.json` files updated (pm, dev, qa, ops)
+
+### Fixed
+- Replaced non-existent packages (`@anthropic/mcp-jira`, etc.) with real verified packages
+- Tool names now match working system: `mcp__jira__*`, `mcp__confluence__*`, `mcp__sentry__*`, `mcp__github__*`
+
 ## [0.2.0] - 2026-03-29
 
 ### Added

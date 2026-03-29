@@ -1,7 +1,7 @@
 ---
 name: accept
 description: "Acceptance criteria verification — checks implementation against PM's acceptance criteria from refined task, using Jira, code, and test results."
-allowed_tools: ["Read", "Grep", "Glob", "Bash", "Write", "Agent", "AskUserQuestion", "mcp__jira__*", "mcp__confluence__*", "mcp__sentry__*"]
+allowed_tools: ["Read", "Grep", "Glob", "Bash", "Write", "Agent", "AskUserQuestion", "mcp__jira__*", "mcp__confluence__*", "mcp__sentry__*", "mcp__github__*"]
 triggers:
   - "accept"
   - "acceptance check"

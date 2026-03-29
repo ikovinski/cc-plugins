@@ -1,7 +1,7 @@
 ---
 name: challenge
 description: "Deep challenge — stress-tests refined task through 6 lenses (business viability, scope, assumptions, user, dependencies, failure modes). Uses MCP data for evidence-based findings."
-allowed_tools: ["Read", "Grep", "Glob", "Write", "Bash", "Agent", "AskUserQuestion", "mcp__jira__*", "mcp__confluence__*", "mcp__sentry__*"]
+allowed_tools: ["Read", "Grep", "Glob", "Write", "Bash", "Agent", "AskUserQuestion", "mcp__jira__*", "mcp__confluence__*", "mcp__sentry__*", "mcp__github__*"]
 triggers:
   - "challenge"
   - "challenge task"

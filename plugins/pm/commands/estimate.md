@@ -1,7 +1,7 @@
 ---
 name: estimate
 description: "Task estimation — analyzes complexity using multiple dimensions, compares with Jira history, produces T-shirt sizing with hour ranges."
-allowed_tools: ["Read", "Grep", "Glob", "Write", "Agent", "mcp__jira__*", "mcp__confluence__*"]
+allowed_tools: ["Read", "Grep", "Glob", "Write", "Agent", "mcp__jira__*", "mcp__confluence__*", "mcp__sentry__*", "mcp__github__*"]
 triggers:
   - "estimate"
   - "estimate task"

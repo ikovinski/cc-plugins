@@ -1,35 +1,41 @@
 {
-  "jira": {
-    "command": "npx",
-    "args": ["-y", "@anthropic/mcp-jira"],
-    "env": {
-      "JIRA_URL": "${JIRA_URL}",
-      "JIRA_TOKEN": "${JIRA_TOKEN}",
-      "JIRA_USER_EMAIL": "${JIRA_USER_EMAIL}"
-    }
-  },
-  "confluence": {
-    "command": "npx",
-    "args": ["-y", "@anthropic/mcp-confluence"],
-    "env": {
-      "CONFLUENCE_URL": "${CONFLUENCE_URL}",
-      "CONFLUENCE_TOKEN": "${CONFLUENCE_TOKEN}",
-      "CONFLUENCE_USER_EMAIL": "${CONFLUENCE_USER_EMAIL}"
-    }
-  },
-  "sentry": {
-    "command": "npx",
-    "args": ["-y", "@anthropic/mcp-sentry"],
-    "env": {
-      "SENTRY_TOKEN": "${SENTRY_TOKEN}",
-      "SENTRY_ORG": "${SENTRY_ORG}"
-    }
-  },
-  "git": {
-    "command": "npx",
-    "args": ["-y", "@anthropic/mcp-git"],
-    "env": {
-      "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+  "mcpServers": {
+    "jira": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@aashari/mcp-server-atlassian-jira"],
+      "env": {
+        "ATLASSIAN_SITE_NAME": "${ATLASSIAN_JIRA_SITE_NAME}",
+        "ATLASSIAN_USER_EMAIL": "${ATLASSIAN_USER_EMAIL}",
+        "ATLASSIAN_API_TOKEN": "${ATLASSIAN_API_TOKEN}"
+      }
+    },
+    "confluence": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@aashari/mcp-server-atlassian-confluence"],
+      "env": {
+        "ATLASSIAN_SITE_NAME": "${ATLASSIAN_CONFLUENCE_SITE_NAME}",
+        "ATLASSIAN_USER_EMAIL": "${ATLASSIAN_USER_EMAIL}",
+        "ATLASSIAN_API_TOKEN": "${ATLASSIAN_API_TOKEN}"
+      }
+    },
+    "sentry": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@sentry/mcp-server"],
+      "env": {
+        "SENTRY_ACCESS_TOKEN": "${SENTRY_ACCESS_TOKEN}",
+        "SENTRY_ORG": "${SENTRY_ORG}"
+      }
+    },
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 ---
 name: codebase
 description: "PM-friendly codebase overview — components, APIs, DB, integrations, activity. Works locally (in project) or remotely (GitHub MCP). Auto-detects best source."
-allowed_tools: ["Read", "Grep", "Glob", "Bash", "Write", "Agent", "AskUserQuestion", "mcp__jira__*", "mcp__confluence__*", "mcp__sentry__*"]
+allowed_tools: ["Read", "Grep", "Glob", "Bash", "Write", "Agent", "AskUserQuestion", "mcp__jira__*", "mcp__confluence__*", "mcp__sentry__*", "mcp__github__*"]
 triggers:
   - "codebase"
   - "explore code"

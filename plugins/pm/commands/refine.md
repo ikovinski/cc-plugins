@@ -1,7 +1,7 @@
 ---
 name: refine
 description: "Task refinement — takes fuzzy task from PM, performs deep analysis across Jira/Confluence/Sentry/Git/codebase, generates hypotheses, asks targeted questions, produces structured task document."
-allowed_tools: ["Read", "Grep", "Glob", "Write", "Edit", "Bash", "Agent", "AskUserQuestion", "mcp__jira__*", "mcp__confluence__*", "mcp__sentry__*"]
+allowed_tools: ["Read", "Grep", "Glob", "Write", "Edit", "Bash", "Agent", "AskUserQuestion", "mcp__jira__*", "mcp__confluence__*", "mcp__sentry__*", "mcp__github__*"]
 triggers:
   - "refine"
   - "refine task"

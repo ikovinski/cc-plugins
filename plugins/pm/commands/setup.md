@@ -1,6 +1,6 @@
 ---
 name: setup
-description: "Interactive MCP setup — checks which integrations are missing, asks which ones to configure, generates ready-to-paste env var blocks."
+description: "MCP setup — checks connector status, collects non-sensitive config (site names), generates env var block for shell profile."
 allowed_tools: ["Read", "Bash", "Write", "AskUserQuestion"]
 triggers:
   - "setup"
@@ -8,75 +8,79 @@ triggers:
   - "налаштувати"
 ---
 
-# /pm:setup — MCP Configuration
+# /pm:setup — MCP Connectors Setup
 
-Інтерактивне налаштування інтеграцій. Перевіряє що вже підключено, питає що потрібно, генерує готовий блок для shell profile.
+PM plugin uses 4 MCP connectors: Jira, Confluence, Sentry, GitHub. Each requires environment variables. This command checks what's configured and helps set up the rest.
 
 ## Usage
 
 ```bash
-/pm:setup              # Full interactive setup
-/pm:setup jira         # Configure only Jira
-/pm:setup confluence   # Configure only Confluence
-/pm:setup sentry       # Configure only Sentry
-/pm:setup git          # Configure only Git
+/pm:setup              # Show status and guide
+/pm:setup test         # Test all connectors
 ```
+
+## Connectors Overview
+
+| Connector | Package | Type | Env Vars |
+|-----------|---------|------|----------|
+| **Jira** | `@aashari/mcp-server-atlassian-jira` | stdio | `ATLASSIAN_JIRA_SITE_NAME`, `ATLASSIAN_USER_EMAIL`, `ATLASSIAN_API_TOKEN` |
+| **Confluence** | `@aashari/mcp-server-atlassian-confluence` | stdio | `ATLASSIAN_CONFLUENCE_SITE_NAME`, `ATLASSIAN_USER_EMAIL`, `ATLASSIAN_API_TOKEN` |
+| **Sentry** | `@sentry/mcp-server` | stdio | `SENTRY_ACCESS_TOKEN`, `SENTRY_ORG` |
+| **GitHub** | `@modelcontextprotocol/server-github` | stdio | `GITHUB_PERSONAL_ACCESS_TOKEN` |
+
+Note: `ATLASSIAN_USER_EMAIL` and `ATLASSIAN_API_TOKEN` are shared between Jira and Confluence. Site names can be different.
 
 ## Process
 
-### Step 1 — Check Current Status
-
-Run the check script to see what's already configured:
+### Step 1 — Show Status
 
 ```bash
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/check-mcp-status.sh"
 ```
 
-Show the status table to the user.
-
 ### Step 2 — Ask What to Configure
 
-If specific integration not passed as argument, ask via AskUserQuestion:
+If specific connector not passed as argument, ask via AskUserQuestion:
 
 ```
-Які інтеграції потрібно налаштувати?
+Які конектори потрібно налаштувати?
 
   a) Jira — задачі, stories, sprint planning
   b) Confluence — документація, specs, PRDs
   c) Sentry — production issues, error tracking
-  d) Git (GitHub) — PRs, commits, branches
-  e) Всі одразу
+  d) GitHub — PRs, commits, code browsing
+  e) Всі
   f) Пропустити — працювати в dialogue mode
 ```
 
-### Step 3 — Collect Configuration (per integration)
+### Step 3 — Collect Non-Sensitive Config
 
-For each selected integration, ask NON-SENSITIVE information via AskUserQuestion. **NEVER ask for tokens directly** — they will be in conversation context.
+Ask via AskUserQuestion. **NEVER ask for tokens directly.**
 
 #### Jira
 
 ```
-Яка URL вашого Jira instance?
+Яка назва вашого Jira site?
+(Субдомен з URL: https://{site-name}.atlassian.net)
 
-Варіанти:
-  a) https://company.atlassian.net — Atlassian Cloud
-  b) https://jira.company.com — Self-hosted
-  c) Інше — вкажіть URL
-```
-
-```
-Яка ваша email адреса в Jira?
-(Потрібна для API автентифікації разом з токеном)
+  Наприклад: якщо URL — https://amomobile.atlassian.net, то site name — "amomobile"
 ```
 
 #### Confluence
 
 ```
-Confluence зазвичай на тому ж домені що й Jira.
-URL: {jira_url}/wiki — це вірно?
+Яка назва вашого Confluence site?
+(Може відрізнятись від Jira)
 
-  a) Так
-  b) Ні, інший URL — вкажіть
+  a) Той самий що й Jira ({jira_site_name})
+  b) Інший — вкажіть
+```
+
+#### Atlassian Email
+
+```
+Яка ваша email адреса в Atlassian?
+(Потрібна для API автентифікації)
 ```
 
 #### Sentry
@@ -86,19 +90,16 @@ URL: {jira_url}/wiki — це вірно?
 (Видно в URL: https://sentry.io/organizations/{org-name}/)
 ```
 
-#### Git
+#### GitHub
 
 ```
-Який Git provider використовуєте?
+Який GitHub використовуєте?
 
-  a) GitHub.com
-  b) GitHub Enterprise — вкажіть URL
-  c) GitLab — (потрібен інший MCP server, покажу налаштування)
+  a) github.com
+  b) GitHub Enterprise — вкажіть домен
 ```
 
 ### Step 4 — Generate Configuration Block
-
-Based on collected information, generate a ready-to-paste block.
 
 **Output format:**
 
@@ -110,39 +111,43 @@ Based on collected information, generate a ready-to-paste block.
 │  # === CC Plugins — MCP Configuration ===
 │
 │  # Jira
-│  export JIRA_URL="https://company.atlassian.net"
-│  export JIRA_TOKEN="<your-jira-api-token>"
-│  export JIRA_USER_EMAIL="user@company.com"
+│  export ATLASSIAN_JIRA_SITE_NAME="{jira_site}"
+│  export ATLASSIAN_USER_EMAIL="{email}"
+│  export ATLASSIAN_API_TOKEN="<your-atlassian-api-token>"
 │
 │  # Confluence
-│  export CONFLUENCE_URL="https://company.atlassian.net/wiki"
-│  export CONFLUENCE_TOKEN="<your-confluence-api-token>"
-│  export CONFLUENCE_USER_EMAIL="user@company.com"
+│  export ATLASSIAN_CONFLUENCE_SITE_NAME="{confluence_site}"
 │
 │  # Sentry
-│  export SENTRY_TOKEN="<your-sentry-auth-token>"
-│  export SENTRY_ORG="company-org"
+│  export SENTRY_ACCESS_TOKEN="<your-sentry-token>"
+│  export SENTRY_ORG="{org}"
 │
-│  # Git (GitHub)
-│  export GITHUB_TOKEN="<your-github-token>"
+│  # GitHub
+│  export GITHUB_PERSONAL_ACCESS_TOKEN="<your-github-pat>"
 │
 └─────────────────────────────────────────────────────────
 
 Де отримати токени:
-  • Jira/Confluence: https://id.atlassian.com/manage-profile/security/api-tokens
+  • Atlassian: https://id.atlassian.com/manage-profile/security/api-tokens
+    → Create API token → назва: "cc-plugins"
+    → Один токен працює для Jira і Confluence
   • Sentry: https://sentry.io/settings/account/api/auth-tokens/
-  • GitHub: https://github.com/settings/tokens (scope: repo, read:org)
+    → Scopes: event:read, issue:read, project:read, org:read
+  • GitHub: https://github.com/settings/tokens
+    → Generate new token (classic) → Scopes: repo, read:org
 
 Після додавання:
-  1. Виконайте: source ~/.zshrc
-  2. Перезапустіть Claude Code
-  3. Перевірте: /pm:setup (має показати ✅ для всіх)
+  1. Замініть <your-...-token> на реальні значення
+  2. Виконайте: source ~/.zshrc
+  3. Перезапустіть Claude Code
+  4. Перевірте: /pm:setup
 ```
 
 ### Step 5 — Offer to Write Automatically
 
 ```
-Хочете щоб я автоматично додав цей блок у ваш shell profile?
+Хочете щоб я додав цей блок у ваш shell profile?
+(Токени будуть placeholder'ами — замінити потрібно вручну)
 
   a) Так, додай в ~/.zshrc
   b) Так, додай в ~/.bashrc
@@ -154,9 +159,7 @@ If user chooses a) or b):
 2. Check if `# === CC Plugins` block already exists
 3. If exists — ask to overwrite or skip
 4. If not — append the block at the end
-5. Remind user to run `source ~/.zshrc` and restart Claude Code
-
-**SECURITY NOTE:** When writing to shell profile, use placeholder `<your-xxx-token>` for token values. NEVER write actual tokens collected via conversation. The user must replace placeholders manually.
+5. **SECURITY:** Use placeholder `<your-xxx-token>` for token values. NEVER write actual tokens.
 
 ### Step 6 — Verify
 
@@ -166,11 +169,9 @@ After user confirms they've set up tokens:
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/check-mcp-status.sh"
 ```
 
-Show updated status table.
-
 ## Idempotency
 
 Running `/pm:setup` multiple times is safe:
 - Shows current status first
-- Only asks about unconfigured integrations
+- Only asks about unconfigured connectors
 - Won't duplicate entries in shell profile (checks for existing block)
