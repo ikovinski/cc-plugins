@@ -5,6 +5,11 @@ All notable changes to the PM plugin will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-03-29
+
+### Fixed
+- **Agent paths in commands** — all agent references now use `${CLAUDE_PLUGIN_ROOT}/agents/` instead of relative `agents/`. Fixes "File does not exist" when plugin runs from cache outside its own directory (e.g. PM without cloned repo). Affected: refine, challenge, estimate, codebase commands.
+
 ## [0.3.0] - 2026-03-29
 
 ### Changed

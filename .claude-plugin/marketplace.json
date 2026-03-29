@@ -8,7 +8,7 @@
       "name": "pm",
       "source": "./plugins/pm",
       "description": "PM plugin — task refinement with hypothesis generation & challenge, estimation, acceptance verification, codebase exploration. Jira/Confluence/Sentry/Git MCP. Works without cloned repo.",
-      "version": "0.3.1"
+      "version": "0.3.2"
     },
     {
       "name": "dev",

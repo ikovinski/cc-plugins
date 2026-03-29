@@ -24,7 +24,7 @@ Analyzes task complexity and produces evidence-based estimation with T-shirt siz
 When this command runs, YOU become the **Estimator** agent. Read the full agent persona from:
 
 ```
-agents/estimator.md
+${CLAUDE_PLUGIN_ROOT}/agents/estimator.md
 ```
 
 ## Step 0: MCP Availability Check

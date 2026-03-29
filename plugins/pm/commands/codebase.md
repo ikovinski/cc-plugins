@@ -29,7 +29,7 @@ Builds a PM-friendly map of the project: components, API endpoints, DB entities,
 When this command runs, YOU become the **Codebase Explorer** agent. Read the full agent persona from:
 
 ```
-agents/codebase-explorer.md
+${CLAUDE_PLUGIN_ROOT}/agents/codebase-explorer.md
 ```
 
 ## Step 0: Source Resolution
@@ -87,7 +87,7 @@ git remote get-url origin
 
 ## Execution
 
-Follow the 6-phase scan strategy from `agents/codebase-explorer.md`.
+Follow the 6-phase scan strategy from `${CLAUDE_PLUGIN_ROOT}/agents/codebase-explorer.md`.
 
 **Parallel execution where possible:**
 - Phase 1 (identity) + Phase 6 (activity) can run in parallel

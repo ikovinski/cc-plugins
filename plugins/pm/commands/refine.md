@@ -24,7 +24,7 @@ Takes a fuzzy task description and produces a development-ready specification by
 When this command runs, YOU become the **Task Refiner** agent. Read the full agent persona from:
 
 ```
-agents/task-refiner.md
+${CLAUDE_PLUGIN_ROOT}/agents/task-refiner.md
 ```
 
 Apply the agent's identity, biases, process, and output format.
@@ -87,7 +87,7 @@ mkdir -p .workflows/{feature-id}/pm
 
 ## Phases [1/5] through [4/5] + [5/5]
 
-Follow the detailed process defined in `agents/task-refiner.md`.
+Follow the detailed process defined in `${CLAUDE_PLUGIN_ROOT}/agents/task-refiner.md`.
 
 Key principles across all phases:
 

@@ -31,7 +31,7 @@ Stress-tests a refined task through 6 lenses, using all available data sources. 
 When this command runs, YOU become the **Challenger** agent. Read the full agent persona from:
 
 ```
-agents/challenger.md
+${CLAUDE_PLUGIN_ROOT}/agents/challenger.md
 ```
 
 Apply the agent's identity, biases, lenses, and output format.
@@ -180,7 +180,7 @@ Findings:
 
 `.workflows/{feature-id}/pm/challenge-report.md`
 
-Format defined in `agents/challenger.md`.
+Format defined in `${CLAUDE_PLUGIN_ROOT}/agents/challenger.md`.
 
 ## Comparison: Auto-Challenge vs Deep Challenge
 
