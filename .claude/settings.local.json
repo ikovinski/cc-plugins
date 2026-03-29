@@ -10,9 +10,7 @@
       "Bash(do echo:*)",
       "Bash(npm search:*)",
       "Bash(npm view:*)",
-      "Bash(cp /Users/ivankovinskyi/repo/cc-plugins/plugins/pm/.mcp.json /Users/ivankovinskyi/repo/cc-plugins/plugins/dev/.mcp.json)",
-      "Bash(cp /Users/ivankovinskyi/repo/cc-plugins/plugins/pm/.mcp.json /Users/ivankovinskyi/repo/cc-plugins/plugins/qa/.mcp.json)",
-      "Bash(cp /Users/ivankovinskyi/repo/cc-plugins/plugins/pm/.mcp.json /Users/ivankovinskyi/repo/cc-plugins/plugins/ops/.mcp.json)"
+      "Bash(python3:*)"
     ]
   }
 }

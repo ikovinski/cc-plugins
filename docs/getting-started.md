@@ -113,26 +113,23 @@ Run /pm:setup to configure missing env vars
 /pm:setup
 ```
 
-Plugin проведе через налаштування і згенерує блок для shell profile:
+Plugin запитає site names, email, org name і запише в `~/.claude/settings.json` → секцію `env`:
 
+```json
+{
+  "env": {
+    "ATLASSIAN_JIRA_SITE_NAME": "your-jira-site",
+    "ATLASSIAN_CONFLUENCE_SITE_NAME": "your-confluence-site",
+    "ATLASSIAN_USER_EMAIL": "you@company.com",
+    "ATLASSIAN_API_TOKEN": "<your-atlassian-api-token>",
+    "SENTRY_ACCESS_TOKEN": "<your-sentry-token>",
+    "SENTRY_ORG": "your-org",
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "<your-github-pat>"
+  }
+}
 ```
-# === CC Plugins — MCP Configuration ===
 
-# Jira (site name — субдомен з URL https://{site}.atlassian.net)
-export ATLASSIAN_JIRA_SITE_NAME="your-jira-site"
-export ATLASSIAN_USER_EMAIL="you@company.com"
-export ATLASSIAN_API_TOKEN="<your-atlassian-api-token>"
-
-# Confluence (може бути інший site ніж Jira)
-export ATLASSIAN_CONFLUENCE_SITE_NAME="your-confluence-site"
-
-# Sentry
-export SENTRY_ACCESS_TOKEN="<your-sentry-token>"
-export SENTRY_ORG="your-org"
-
-# GitHub
-export GITHUB_PERSONAL_ACCESS_TOKEN="<your-github-pat>"
-```
+> **Чому settings.json?** Claude Code гарантовано читає цей файл при кожному запуску — на відміну від `~/.zshrc`, який може не завантажуватись.
 
 ### Де отримати токени
 
@@ -144,11 +141,10 @@ export GITHUB_PERSONAL_ACCESS_TOKEN="<your-github-pat>"
 
 ### Після налаштування
 
-1. Додайте блок в `~/.zshrc`
-2. Замініть `<your-...-token>` на реальні значення
-3. Виконайте: `source ~/.zshrc`
-4. Перезапустіть Claude Code
-5. Перевірте: `/pm:setup` — має показати ✅ для всіх
+1. Відкрийте `~/.claude/settings.json`
+2. Замініть `<your-...-token>` на реальні значення в секції `env`
+3. Перезапустіть Claude Code
+4. Перевірте: `/pm:setup` — має показати ✅ для всіх
 
 ---
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # PM Plugin — MCP Status Check
-# Runs on SessionStart, shows which integrations are configured
+# Checks env vars from all Claude Code config sources
 
 set -euo pipefail
 
@@ -10,9 +10,52 @@ YELLOW="\033[0;33m"
 BOLD="\033[1m"
 RESET="\033[0m"
 
+# All places Claude Code may store env vars (priority order)
+CONFIG_FILES=(
+  "$HOME/.claude/settings.json"
+  "$HOME/.claude/settings.local.json"
+  "$HOME/.claude.json"
+)
+
+# Also check project-level if in a project
+if [ -f ".claude/settings.json" ]; then
+  CONFIG_FILES+=(".claude/settings.json")
+fi
+if [ -f ".claude/settings.local.json" ]; then
+  CONFIG_FILES+=(".claude/settings.local.json")
+fi
+
+# Check var in shell env OR in any Claude Code config file
 check_var() {
   local name="$1"
-  if [ -n "${!name:-}" ]; then echo "ok"; else echo "missing"; fi
+
+  # 1. Shell env
+  if [ -n "${!name:-}" ]; then
+    echo "ok"
+    return
+  fi
+
+  # 2. Claude Code config files → env section
+  for cfg in "${CONFIG_FILES[@]}"; do
+    if [ -f "$cfg" ]; then
+      local val
+      val=$(python3 -c "
+import json
+try:
+    d = json.load(open('$cfg'))
+    v = d.get('env', {}).get('$name', '')
+    print(v)
+except:
+    print('')
+" 2>/dev/null)
+      if [ -n "$val" ]; then
+        echo "ok"
+        return
+      fi
+    fi
+  done
+
+  echo "missing"
 }
 
 # Jira
@@ -44,7 +87,9 @@ status_icon() {
 missing_list() {
   local missing=()
   for name in "$@"; do
-    if [ -z "${!name:-}" ]; then missing+=("$name"); fi
+    local val
+    val=$(check_var "$name")
+    if [ "$val" = "missing" ]; then missing+=("$name"); fi
   done
   if [ ${#missing[@]} -gt 0 ]; then
     echo "              missing: ${missing[*]}"

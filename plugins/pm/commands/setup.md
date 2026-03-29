@@ -1,6 +1,6 @@
 ---
 name: setup
-description: "MCP setup — checks connector status, collects non-sensitive config (site names), generates env var block for shell profile."
+description: "MCP setup — checks connector status, collects non-sensitive config (site names), writes env vars to ~/.claude/settings.json."
 allowed_tools: ["Read", "Bash", "Write", "AskUserQuestion"]
 triggers:
   - "setup"
@@ -99,71 +99,95 @@ Ask via AskUserQuestion. **NEVER ask for tokens directly.**
   b) GitHub Enterprise — вкажіть домен
 ```
 
-### Step 4 — Generate Configuration Block
+### Step 4 — Write to Claude Code Settings
 
-**Output format:**
+The most reliable way to store env vars — **`~/.claude/settings.json` → `env` section**. Claude Code reads this on every startup, regardless of shell profile.
+
+Based on collected non-sensitive data + token placeholders, update `~/.claude/settings.json`:
+
+1. Read current `~/.claude/settings.json`
+2. Merge into existing `env` section (don't overwrite other vars)
+3. Use real values for non-sensitive data (site names, email, org)
+4. Use `<placeholder>` for tokens — ask user to replace manually
+
+**What to write (example):**
+
+```json
+{
+  "env": {
+    "ATLASSIAN_JIRA_SITE_NAME": "{jira_site}",
+    "ATLASSIAN_CONFLUENCE_SITE_NAME": "{confluence_site}",
+    "ATLASSIAN_USER_EMAIL": "{email}",
+    "ATLASSIAN_API_TOKEN": "<your-atlassian-api-token>",
+    "SENTRY_ACCESS_TOKEN": "<your-sentry-token>",
+    "SENTRY_ORG": "{org}",
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "<your-github-pat>"
+  }
+}
+```
+
+**Show to PM before writing:**
 
 ```
-✅ Готово! Додайте наступний блок у ваш ~/.zshrc (або ~/.bashrc):
+Додаю в ~/.claude/settings.json → env:
 
-┌─────────────────────────────────────────────────────────
-│
-│  # === CC Plugins — MCP Configuration ===
-│
-│  # Jira
-│  export ATLASSIAN_JIRA_SITE_NAME="{jira_site}"
-│  export ATLASSIAN_USER_EMAIL="{email}"
-│  export ATLASSIAN_API_TOKEN="<your-atlassian-api-token>"
-│
-│  # Confluence
-│  export ATLASSIAN_CONFLUENCE_SITE_NAME="{confluence_site}"
-│
-│  # Sentry
-│  export SENTRY_ACCESS_TOKEN="<your-sentry-token>"
-│  export SENTRY_ORG="{org}"
-│
-│  # GitHub
-│  export GITHUB_PERSONAL_ACCESS_TOKEN="<your-github-pat>"
-│
-└─────────────────────────────────────────────────────────
+  ATLASSIAN_JIRA_SITE_NAME     = "amomobile"
+  ATLASSIAN_CONFLUENCE_SITE_NAME = "um-guide"
+  ATLASSIAN_USER_EMAIL         = "ivan@amo.tech"
+  ATLASSIAN_API_TOKEN          = "<your-atlassian-api-token>"    ← замініть
+  SENTRY_ACCESS_TOKEN          = "<your-sentry-token>"           ← замініть
+  SENTRY_ORG                   = "amomama"
+  GITHUB_PERSONAL_ACCESS_TOKEN = "<your-github-pat>"             ← замініть
 
 Де отримати токени:
   • Atlassian: https://id.atlassian.com/manage-profile/security/api-tokens
-    → Create API token → назва: "cc-plugins"
-    → Один токен працює для Jira і Confluence
   • Sentry: https://sentry.io/settings/account/api/auth-tokens/
-    → Scopes: event:read, issue:read, project:read, org:read
   • GitHub: https://github.com/settings/tokens
-    → Generate new token (classic) → Scopes: repo, read:org
 
-Після додавання:
-  1. Замініть <your-...-token> на реальні значення
-  2. Виконайте: source ~/.zshrc
-  3. Перезапустіть Claude Code
-  4. Перевірте: /pm:setup
+Записати?
+  a) Так, записуй (потрібно буде замінити placeholder'и на токени)
+  b) Ні, я зроблю сам
 ```
 
-### Step 5 — Offer to Write Automatically
+### Step 5 — Write Settings
+
+If user confirms:
+
+1. Read `~/.claude/settings.json`
+2. Parse as JSON
+3. Merge new vars into `env` section (preserve existing vars)
+4. Write back
+5. **SECURITY:** Token placeholders ONLY. NEVER write real tokens collected via conversation.
+
+```python
+# Merge logic (pseudocode):
+settings = read_json("~/.claude/settings.json")
+settings.setdefault("env", {})
+settings["env"]["ATLASSIAN_JIRA_SITE_NAME"] = "amomobile"  # real value
+settings["env"]["ATLASSIAN_API_TOKEN"] = "<your-atlassian-api-token>"  # placeholder
+# ... etc
+write_json("~/.claude/settings.json", settings)
+```
+
+After writing:
 
 ```
-Хочете щоб я додав цей блок у ваш shell profile?
-(Токени будуть placeholder'ами — замінити потрібно вручну)
+✅ Записано в ~/.claude/settings.json
 
-  a) Так, додай в ~/.zshrc
-  b) Так, додай в ~/.bashrc
-  c) Ні, я додам сам
+⚠️ Замініть placeholder'и на реальні токени:
+  1. Відкрийте ~/.claude/settings.json
+  2. Знайдіть секцію "env"
+  3. Замініть:
+     • "<your-atlassian-api-token>" → токен з id.atlassian.com
+     • "<your-sentry-token>" → токен з sentry.io
+     • "<your-github-pat>" → токен з github.com/settings/tokens
+  4. Перезапустіть Claude Code
+  5. Перевірте: /pm:setup
 ```
-
-If user chooses a) or b):
-1. Read the current shell profile
-2. Check if `# === CC Plugins` block already exists
-3. If exists — ask to overwrite or skip
-4. If not — append the block at the end
-5. **SECURITY:** Use placeholder `<your-xxx-token>` for token values. NEVER write actual tokens.
 
 ### Step 6 — Verify
 
-After user confirms they've set up tokens:
+After user replaces placeholders and restarts:
 
 ```bash
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/check-mcp-status.sh"
@@ -174,4 +198,5 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/check-mcp-status.sh"
 Running `/pm:setup` multiple times is safe:
 - Shows current status first
 - Only asks about unconfigured connectors
-- Won't duplicate entries in shell profile (checks for existing block)
+- Merges into existing `env` (doesn't overwrite other vars)
+- Skips vars that already have non-placeholder values
