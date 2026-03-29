@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls -la /Users/ivankovinskyi/repo/ai-agents-system/*.sh)"
+      "Bash(ls -la /Users/ivankovinskyi/repo/ai-agents-system/*.sh)",
+      "Bash(chmod:*)",
+      "Bash(bash /Users/ivankovinskyi/repo/cc-plugins/plugins/pm/scripts/check-mcp-status.sh)",
+      "Bash(JIRA_URL=\"https://test.atlassian.net\" JIRA_TOKEN=\"xxx\" JIRA_USER_EMAIL=\"test@test.com\" GITHUB_TOKEN=\"ghp_xxx\" bash /Users/ivankovinskyi/repo/cc-plugins/plugins/pm/scripts/check-mcp-status.sh)",
+      "Bash(JIRA_URL=\"x\" JIRA_TOKEN=\"x\" JIRA_USER_EMAIL=\"x\" CONFLUENCE_URL=\"x\" CONFLUENCE_TOKEN=\"x\" CONFLUENCE_USER_EMAIL=\"x\" SENTRY_TOKEN=\"x\" SENTRY_ORG=\"x\" GITHUB_TOKEN=\"x\" bash /Users/ivankovinskyi/repo/cc-plugins/plugins/pm/scripts/check-mcp-status.sh)",
+      "WebSearch"
     ]
   }
 }

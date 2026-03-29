@@ -2,5 +2,7 @@
   "name": "pm",
   "version": "0.1.0",
   "description": "PM plugin for software teams — task refinement, estimation, acceptance criteria verification. Integrates with Jira, Confluence, Sentry, Git via MCP.",
-  "keywords": ["pm", "product-management", "refinement", "estimation"]
+  "keywords": ["pm", "product-management", "refinement", "estimation"],
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json"
 }

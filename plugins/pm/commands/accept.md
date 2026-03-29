@@ -19,6 +19,19 @@ Verifies that implementation meets the acceptance criteria defined during refine
 /pm:accept {feature-id} --update-jira       # Also update Jira issue status
 ```
 
+## Step 0: MCP Availability Check
+
+Check which integrations are available. Adapt behavior:
+
+| MCP Status | Behavior |
+|-----------|----------|
+| Jira connected | Load AC from Jira, update issue status after verification |
+| Sentry connected | Check for new production errors post-deployment |
+| Git connected | Check PR status, merge state |
+| None connected | Load AC from local artifacts only |
+
+Do NOT block execution — always proceed with what's available.
+
 ## Process
 
 ### Step 1 — Load Criteria

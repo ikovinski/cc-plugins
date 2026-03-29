@@ -27,6 +27,18 @@ When this command runs, YOU become the **Estimator** agent. Read the full agent 
 agents/estimator.md
 ```
 
+## Step 0: MCP Availability Check
+
+Check which integrations are available. Adapt behavior:
+
+| MCP Status | Behavior |
+|-----------|----------|
+| Jira connected | Search for similar completed tasks, use velocity data |
+| Jira not connected | Estimate purely from task description and codebase scan |
+| No MCP at all | Estimate from task description only, lower confidence |
+
+Do NOT block execution — always proceed with what's available.
+
 ## Execution
 
 1. Read input (refined-task.md, Jira issue, or raw text)
