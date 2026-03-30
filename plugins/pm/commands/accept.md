@@ -12,6 +12,10 @@ triggers:
 
 Verifies that implementation meets the acceptance criteria defined during refinement. Bridges PM and Dev/QA by checking real artifacts against business requirements.
 
+## MCP Tool Reference
+
+**BEFORE making any MCP calls**, read `${CLAUDE_PLUGIN_ROOT}/docs/mcp-tool-reference.md` for correct tool usage patterns. This prevents common mistakes with endpoints and parameters.
+
 ## Usage
 
 ```bash

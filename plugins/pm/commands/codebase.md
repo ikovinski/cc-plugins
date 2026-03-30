@@ -14,6 +14,10 @@ triggers:
 
 Builds a PM-friendly map of the project: components, API endpoints, DB entities, integrations, and activity — without reading raw code. Works with local project, GitHub API, or both.
 
+## MCP Tool Reference
+
+**BEFORE making any MCP calls**, read `${CLAUDE_PLUGIN_ROOT}/docs/mcp-tool-reference.md` for correct tool usage patterns. This prevents common mistakes with endpoints and parameters.
+
 ## Usage
 
 ```bash

@@ -5,6 +5,17 @@ All notable changes to the PM plugin will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2026-03-30
+
+### Added
+- **MCP Tool Reference** (`docs/mcp-tool-reference.md`) — correct usage patterns for Jira, Confluence, Sentry, GitHub MCP tools. Prevents Claude from guessing endpoints and parameters.
+- All 5 MCP-using commands (refine, challenge, estimate, accept, codebase) now include mandatory reference to read before first MCP call.
+
+### Fixed
+- **Jira search**: `POST /rest/api/3/search/jql` with `fields` in body (not `GET /rest/api/3/search` which returns HTTP 410)
+- **Confluence body**: `GET /wiki/api/v2/pages/{id}` + `queryParams: {"body-format": "storage"}` (not `/pages/{id}/body` which returns 404)
+- **Confluence params**: `queryParams` (not `params` which is silently ignored)
+
 ## [0.3.2] - 2026-03-29
 
 ### Fixed

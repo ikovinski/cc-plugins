@@ -40,6 +40,10 @@ Phase [4/5]  Auto-Challenge                ← Stress-test through 6 lenses
 Phase [5/5]  Generate Refined Task         ← Structured output with evidence trail
 ```
 
+## MCP Tool Reference
+
+**BEFORE making any MCP calls**, read `${CLAUDE_PLUGIN_ROOT}/docs/mcp-tool-reference.md` for correct tool usage patterns. This prevents common mistakes with endpoints and parameters.
+
 ## Phase [0/5] — Analysis & Transparency
 
 **FIRST thing you do** after receiving input:

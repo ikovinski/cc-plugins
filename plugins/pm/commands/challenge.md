@@ -12,6 +12,10 @@ triggers:
 
 Stress-tests a refined task through 6 lenses, using all available data sources. Produces a challenge report with findings, readiness score, and actionable recommendations.
 
+## MCP Tool Reference
+
+**BEFORE making any MCP calls**, read `${CLAUDE_PLUGIN_ROOT}/docs/mcp-tool-reference.md` for correct tool usage patterns. This prevents common mistakes with endpoints and parameters.
+
 **When to use:**
 - L/XL tasks (high cost of getting it wrong)
 - Tasks with many assumptions or external dependencies

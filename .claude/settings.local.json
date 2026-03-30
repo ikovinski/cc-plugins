@@ -10,7 +10,11 @@
       "Bash(do echo:*)",
       "Bash(npm search:*)",
       "Bash(npm view:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "WebFetch(domain:github.com)",
+      "mcp__jira__jira_get",
+      "mcp__confluence__conf_get",
+      "mcp__jira__jira_post"
     ]
   }
 }
