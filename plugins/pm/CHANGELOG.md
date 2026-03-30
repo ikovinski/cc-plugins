@@ -5,16 +5,26 @@ All notable changes to the PM plugin will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.3] - 2026-03-30
+## [0.4.0] - 2026-03-30
 
 ### Added
-- **MCP Tool Reference** (`docs/mcp-tool-reference.md`) — correct usage patterns for Jira, Confluence, Sentry, GitHub MCP tools. Prevents Claude from guessing endpoints and parameters.
+- **Parallel context gathering** — Phase [1/5] now launches 4 sub-agents simultaneously instead of sequential MCP calls. ~3x faster context collection.
+  - `jira-researcher` (Sonnet) — issue details, comments, linked issues, epic, similar tasks
+  - `confluence-researcher` (Sonnet) — specs, PRDs, ADRs, meeting notes
+  - `sentry-researcher` (Sonnet) — production issues, error rates, stability
+  - `codebase-scanner` (Sonnet) — components, API, DB schema, tests, activity
+- **MCP Tool Reference** (`docs/mcp-tool-reference.md`) — correct usage patterns for Jira, Confluence, Sentry, GitHub MCP tools. Each researcher agent has embedded reference to prevent wrong API calls.
 - All 5 MCP-using commands (refine, challenge, estimate, accept, codebase) now include mandatory reference to read before first MCP call.
+
+### Changed
+- Task Refiner becomes orchestrator — delegates data collection to specialized agents, focuses on analysis, hypotheses, and PM dialogue.
+- Sequential fallback preserved when Agent tool is unavailable.
 
 ### Fixed
 - **Jira search**: `POST /rest/api/3/search/jql` with `fields` in body (not `GET /rest/api/3/search` which returns HTTP 410)
 - **Confluence body**: `GET /wiki/api/v2/pages/{id}` + `queryParams: {"body-format": "storage"}` (not `/pages/{id}/body` which returns 404)
 - **Confluence params**: `queryParams` (not `params` which is silently ignored)
+- Agent path references use `${CLAUDE_PLUGIN_ROOT}` consistently (including challenger reference in task-refiner)
 
 ## [0.3.2] - 2026-03-29
 

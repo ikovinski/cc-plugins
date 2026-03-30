@@ -105,103 +105,104 @@ If some MCP is not available:
 
 ---
 
-### Phase [1/5] — Deep Context Gathering
+### Phase [1/5] — Deep Context Gathering (Parallel)
 
 **Goal:** collect MAXIMUM information from ALL available sources. This is the most critical phase — everything downstream depends on the quality of context gathered here.
 
-#### Jira (if available)
+**Architecture:** Launch specialized researcher sub-agents in parallel. Each agent focuses on one data source and returns structured findings.
 
-**Primary issue:**
-- Full description, acceptance criteria, labels, components
-- Priority, sprint, due date
-- Reporter, assignee, watchers
-- All comments (often contain critical context not in description)
-- Change history (scope changes, re-prioritizations)
+#### Parallel Agent Launch
 
-**Connected issues:**
-- Epic and its other stories → understand broader initiative
-- Linked issues (blocks, is-blocked-by, relates-to)
-- Subtasks
-- Issues in same component with similar labels
+Based on MCP availability from Phase [0/5], launch ALL available researchers **simultaneously** using the Agent tool. Send a single message with multiple Agent calls:
 
-**Historical data:**
-- Similar completed issues (same component, similar keywords) → estimation reference
-- Issues that were reopened or had scope changes → risk patterns
-- Sprint velocity for the team
+```
+┌─────────────────────────────────────────────────────┐
+│  Task Refiner (you — orchestrator)                  │
+│                                                     │
+│  Launch in ONE message (parallel):                  │
+│                                                     │
+│  ├── Agent: jira-researcher        (if Jira ✅)     │
+│  ├── Agent: confluence-researcher  (if Conf ✅)     │
+│  ├── Agent: sentry-researcher      (if Sentry ✅)   │
+│  └── Agent: codebase-scanner       (if Code ✅)     │
+│                                                     │
+│  Wait for all → collect results → Phase [2/5]       │
+└─────────────────────────────────────────────────────┘
+```
 
-#### Confluence (if available)
+#### Agent Prompts
 
-**Search strategy (broad to narrow):**
-1. Search by task keywords → find related pages
-2. Search by component/module name → find technical specs
-3. Search by epic name → find PRDs, roadmap context
-4. Check recently updated pages in the project space → ongoing discussions
+For each agent, read its definition from `${CLAUDE_PLUGIN_ROOT}/agents/` and provide task-specific context in the prompt.
 
-**What to extract:**
-- Product requirements (PRD)
-- Technical specifications
-- Architecture decisions (ADR)
-- Meeting notes mentioning this feature
-- Team agreements, conventions
-- User research, customer feedback
+**Jira Researcher** (`${CLAUDE_PLUGIN_ROOT}/agents/jira-researcher.md`):
+```
+Read your agent definition: ${CLAUDE_PLUGIN_ROOT}/agents/jira-researcher.md
 
-#### Sentry (if available)
+Task: {task summary}
+Jira Key: {key or "none — search by keywords"}
+Project: {project key}
+Keywords: {extracted keywords for search}
 
-**Even if task is NOT a bug**, check Sentry:
-- Errors in the module being modified → risk of introducing regressions
-- Performance issues → might affect the feature
-- User impact data → helps prioritize
+Collect: issue details, comments, linked issues, epic context, similar completed tasks, current sprint.
+Return structured findings.
+```
 
-**For bug tasks:**
-- Full error details, stack trace
-- First seen / last seen / frequency
-- Affected user count and segments
-- Related errors (same module, similar pattern)
-- Release that introduced the error
+**Confluence Researcher** (`${CLAUDE_PLUGIN_ROOT}/agents/confluence-researcher.md`):
+```
+Read your agent definition: ${CLAUDE_PLUGIN_ROOT}/agents/confluence-researcher.md
 
-#### Git (if available — local or GitHub MCP)
+Task: {task summary}
+Keywords: {task keywords}
+Component: {module/component name if known}
+Epic/Feature: {epic name if known}
 
-- Recent commits in related files/directories → who's actively working there
-- Open PRs touching same area → potential conflicts
-- Commit frequency → is this area stable or volatile
-- Contributors → who to consult
+Search for: specs, PRDs, ADRs, meeting notes, team agreements.
+Return structured findings.
+```
 
-#### Codebase (LOCAL or REMOTE — always attempt)
+**Sentry Researcher** (`${CLAUDE_PLUGIN_ROOT}/agents/sentry-researcher.md`):
+```
+Read your agent definition: ${CLAUDE_PLUGIN_ROOT}/agents/sentry-researcher.md
 
-**This is critical.** PM needs codebase context for quality refinement. Use the best available source:
+Task: {task summary}
+Module/Area: {component being modified}
+Keywords: {class names, endpoint paths, error patterns}
 
-**Source resolution (in order):**
+Check: production issues, error rates, stability, recent releases.
+Return structured findings.
+```
 
-1. **Existing codebase-context.md** — check `.workflows/{feature-id}/pm/codebase-context.md` or `codebase-context.md` in CWD. If found and recent (<7 days) — use it, skip scan.
+**Codebase Scanner** (`${CLAUDE_PLUGIN_ROOT}/agents/codebase-scanner.md`):
+```
+Read your agent definition: ${CLAUDE_PLUGIN_ROOT}/agents/codebase-scanner.md
 
-2. **Local project** (Glob/Grep/Read) — if running inside a project directory:
-   - Glob for components, controllers, entities, handlers, tests
-   - Grep for routes, DB tables, integrations, message handlers
-   - Read key config files (routes, composer.json, docker-compose)
+Task: {task summary}
+Keywords: {module names, feature area}
+Source mode: {local / remote / combined}
+Repository: {owner/repo if remote}
 
-3. **Remote via GitHub MCP** — if NOT in a project or local scan is insufficient:
-   - Detect repo from Jira issue (repo links in comments/description)
-   - Or ask PM: "In which repository is this feature? (e.g., acme/bodyfit-api)"
-   - Use GitHub API: repo tree, file contents, code search
-   - Read: package manifest, route configs, entity directory, README
+Scan: components, API, DB schema, tests, activity in affected area.
+Return structured findings.
+```
 
-4. **Combined** — if both local AND GitHub MCP are available:
-   - Local for deep code scan (Glob/Grep — faster, more thorough)
-   - GitHub MCP for activity data (commits, PRs, contributors, other branches)
+#### Collecting Results
 
-**What to extract (regardless of source):**
+After all agents complete:
 
-- **Components map:** what modules exist and what they do (PM language)
-- **Affected area:** which components the task touches
-- **Existing implementation:** similar features, reuse patterns
-- **API surface:** endpoints in the affected area
-- **Data model:** entities, relationships, recent migrations
-- **Integrations:** external services in the affected area
-- **Test coverage:** is there a safety net? (present / missing / partial)
-- **Activity signals:** recent changes, active contributors, open PRs
-- **Risk signals:** no tests, high churn, error hotspots
+1. **Read each agent's response** — structured findings from each source
+2. **Merge into unified context** — combine all findings
+3. **Note gaps** — if an agent found nothing or MCP was unavailable, flag it
+4. **Proceed to Phase [2/5]** — present merged findings + generate hypotheses
 
-**If codebase is completely inaccessible** (no project, no GitHub MCP):
+#### Fallback: Sequential Mode
+
+If Agent tool is not available or fails, fall back to sequential MCP calls directly (one source at a time). The detailed queries for each source are defined in the researcher agent files:
+- `${CLAUDE_PLUGIN_ROOT}/agents/jira-researcher.md`
+- `${CLAUDE_PLUGIN_ROOT}/agents/confluence-researcher.md`
+- `${CLAUDE_PLUGIN_ROOT}/agents/sentry-researcher.md`
+- `${CLAUDE_PLUGIN_ROOT}/agents/codebase-scanner.md`
+
+#### If codebase is completely inaccessible (no project, no GitHub MCP):
 
 ```
 ⚠️ Кодова база недоступна — не в проєкті та GitHub MCP не підключений.
@@ -344,7 +345,7 @@ Between rounds — confirm understanding AND present updated hypotheses:
 
 ### Phase [4/5] — Auto-Challenge
 
-Before generating the final document, stress-test what you've collected. Apply the Challenger lenses (see `agents/challenger.md`) in lightweight mode.
+Before generating the final document, stress-test what you've collected. Apply the Challenger lenses (see `${CLAUDE_PLUGIN_ROOT}/agents/challenger.md`) in lightweight mode.
 
 **This is NOT the full `/pm:challenge`** — it's a quick self-check that catches obvious gaps.
 
