@@ -1,6 +1,6 @@
 {
   "name": "pm",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "PM plugin for software teams — task refinement with deep context gathering, hypothesis generation, challenge verification, estimation, acceptance criteria, codebase exploration. Integrates with Jira, Confluence, Sentry, Git via MCP. Works with or without cloned repository.",
   "keywords": ["pm", "product-management", "refinement", "estimation", "challenge", "codebase"],
   "hooks": "./hooks/hooks.json",
