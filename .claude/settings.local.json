@@ -14,8 +14,7 @@
       "WebFetch(domain:github.com)",
       "mcp__jira__jira_get",
       "mcp__confluence__conf_get",
-      "mcp__jira__jira_post",
-      "Bash(find /Users/ivankovinskyi/repo/ai-agents-system/skills -type f -name *.md)"
+      "mcp__jira__jira_post"
     ]
   }
 }
