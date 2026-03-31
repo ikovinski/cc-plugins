@@ -5,6 +5,11 @@ All notable changes to the QA plugin will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-03-31
+
+### Added
+- **`/qa:setup`** — MCP connectors setup (Jira, Confluence). Detects shared env vars from PM plugin
+
 ## [0.2.0] - 2026-03-31
 
 ### Added

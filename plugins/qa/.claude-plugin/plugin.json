@@ -1,6 +1,6 @@
 {
   "name": "qa",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "QA plugin — test checklist generation from any format (PDF, images, text, URL, Jira, Confluence). Uses 7 test design techniques (EP, BVA, Decision Table, State Transition, Pairwise, Error Guessing, Checklist-based). Integrates with Jira, Confluence via MCP.",
   "keywords": ["qa", "testing", "checklist", "test-design", "quality-assurance"],
   "hooks": "./hooks/hooks.json",

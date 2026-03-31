@@ -9,6 +9,7 @@ QA плагін для Claude Code. Генерує структуровані т
 | Тип | Назва | Опис |
 |-----|-------|------|
 | Command | [/qa:checklist](../commands/checklist.md) | Генерація QA чеклисту з будь-якого формату |
+| Command | [/qa:setup](../commands/setup.md) | Налаштування MCP конекторів |
 | Agent | [qa-engineer](../agents/qa-engineer.md) | QA Engineer — аналіз фічі, вибір технік, генерація перевірок (Sonnet) |
 | Skill | [test-design-techniques](../skills/test-design-techniques/SKILL.md) | 7 технік тест-дизайну з прикладами та pre-defined checklists |
 | MCP | Jira, Confluence, Sentry, Git | Зовнішні інтеграції ([.mcp.json](../.mcp.json)) |
@@ -81,4 +82,4 @@ QA плагін для Claude Code. Генерує структуровані т
 
 Плагін працює і без MCP — з локальними файлами, URL та inline текстом. З MCP отримує контекст з Jira/Confluence автоматично.
 
-Запустіть `/pm:setup` для налаштування MCP конекторів.
+Запустіть `/qa:setup` для налаштування MCP конекторів. Якщо PM плагін вже налаштований — env vars спільні, додаткових дій не потрібно.
