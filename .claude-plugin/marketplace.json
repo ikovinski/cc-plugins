@@ -19,8 +19,8 @@
     {
       "name": "qa",
       "source": "./plugins/qa",
-      "description": "QA plugin — test planning, test cases, regression analysis.",
-      "version": "0.1.0"
+      "description": "QA plugin — test checklist generation from any format (PDF, images, text, URL, Jira, Confluence). 7 test design techniques. MCP integration.",
+      "version": "0.2.0"
     },
     {
       "name": "ops",
